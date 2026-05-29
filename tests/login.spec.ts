@@ -8,5 +8,12 @@ test('User sees error with invalid email', async ({ page }) => {
   await page.getByRole('button', { name: 'Continue' }).click();
 
   // Проверяем что появилось сообщение об ошибке
-  await expect(page.getByText('Email or password is invalid.≠')).toBeVisible();
+  await expect(page.getByText('Email or password is invalid.')).toBeVisible();
+});
+
+test('User sees error with empty fields', async ({ page }) => {
+  await page.goto('https://capital.com/en-eu');
+  await page.getByRole('button', { name: 'Open account' }).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.getByText('The email address domain is invalid')).toBeVisible();
 });
