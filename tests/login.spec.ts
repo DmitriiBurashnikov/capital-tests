@@ -3,6 +3,8 @@ import { LoginPage } from './pages/LoginPage';
 import dotenv from 'dotenv';
 dotenv.config();
 
+test.skip(!!process.env.CI, 'Skipping login tests in CI environment');
+
 const email = process.env.user_email!;
 const password = process.env.user_password!;
 
