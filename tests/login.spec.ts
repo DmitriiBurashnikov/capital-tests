@@ -8,6 +8,7 @@ test.skip(!!process.env.CI, 'Skipping login tests in CI environment');
 const email = process.env.user_email!;
 const password = process.env.user_password!;
 const toolong_user_email = process.env.toolong_user_email!;
+const invalid_email = process.env.invalid_email!;
 
 test('User sees error with invalid email', async ({ page }) => {
   await page.goto('https://capital.com/en-eu');
@@ -34,7 +35,7 @@ test('User can log in with valid credentials', async ({ page, browserName }) => 
   await loginPage.openLoginForm();
   await loginPage.fillLoginForm(email, password);
   await expect(page.getByText('Log out')).toBeVisible({ timeout: 15000 });
-  });
+});
 
 test('User cannot log in with too long email',async ({ page, browserName }) => {
   test.skip(browserName === 'chromium' || browserName === 'firefox', 'Capital.com blocks automation in Chromium');
@@ -42,5 +43,13 @@ test('User cannot log in with too long email',async ({ page, browserName }) => {
   const loginPage = new LoginPage(page)
   await loginPage.openLoginForm();
   await loginPage.fillLoginForm(toolong_user_email, password);
+  await expect(page.getByText('Email or password is invalid.')).toBeVisible();
+});
+
+test('User cannot log in with invalid email', async ({ page }) => {
+
+  const loginPage = new LoginPage(page)
+  await loginPage.openLoginForm();
+  await loginPage.fillLoginForm(invalid_email, password);
   await expect(page.getByText('Email or password is invalid.')).toBeVisible();
 });
