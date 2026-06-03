@@ -9,6 +9,7 @@ const email = process.env.user_email!;
 const password = process.env.user_password!;
 const toolong_user_email = process.env.toolong_user_email!;
 const invalid_email = process.env.invalid_email!;
+const email_with_gaps = process.env.email_with_gaps!;
 
 test('User sees error with invalid email', async ({ page }) => {
   await page.goto('https://capital.com/en-eu');
@@ -51,5 +52,13 @@ test('User cannot log in with invalid email', async ({ page }) => {
   const loginPage = new LoginPage(page)
   await loginPage.openLoginForm();
   await loginPage.fillLoginForm(invalid_email, password);
+  await expect(page.getByText('Email or password is invalid.')).toBeVisible();
+});
+
+test('User cannot log in with email with gaps', async ({ page }) => {
+
+  const loginPage = new LoginPage(page)
+  await loginPage.openLoginForm();
+  await loginPage.fillLoginForm(email_with_gaps, password);
   await expect(page.getByText('Email or password is invalid.')).toBeVisible();
 });
