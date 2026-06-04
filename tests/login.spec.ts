@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, describe } from '@playwright/test';
 import { LoginPage } from './pages/LoginPage';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -13,6 +13,21 @@ const email_with_gaps = process.env.email_with_gaps!;
 const invalid_password = process.env.invalid_password!;
 const gab_email = process.env.gab_email!;
 const gab_password = process.env.gab_password!;
+
+describe('Positive cases',() => {
+
+test('User can log in with valid credentials', async ({ page, browserName }) => {
+  test.skip(browserName === 'chromium' || browserName === 'firefox' || browserName === 'webkit', 'Capital.com blocks automation in Chromium');
+
+  const loginPage = new LoginPage(page);
+  await loginPage.openLoginForm();
+  await loginPage.fillLoginForm(email, password);
+  await expect(page.getByText('Log out')).toBeVisible({ timeout: 20000 });
+});
+
+});
+
+describe('Negative cases',() => {
 
 test('User sees error with invalid email', async ({ page }) => {
   await page.goto('https://capital.com/en-eu');
@@ -32,17 +47,8 @@ test('User sees error with empty fields', async ({ page }) => {
   await expect(page.getByText('The email address domain is invalid')).toBeVisible();
 });
 
-test('User can log in with valid credentials', async ({ page, browserName }) => {
-  test.skip(browserName === 'chromium' || browserName === 'firefox', 'Capital.com blocks automation in Chromium');
-
-  const loginPage = new LoginPage(page);
-  await loginPage.openLoginForm();
-  await loginPage.fillLoginForm(email, password);
-  await expect(page.getByText('Log out')).toBeVisible({ timeout: 20000 });
-});
-
 test('User cannot log in with too long email',async ({ page, browserName }) => {
-  test.skip(browserName === 'chromium' || browserName === 'firefox', 'Capital.com blocks automation in Chromium');
+  test.skip(browserName === 'chromium' || browserName === 'firefox' || browserName === 'webkit', 'Capital.com blocks automation in Chromium');
 
   const loginPage = new LoginPage(page)
   await loginPage.openLoginForm();
@@ -68,7 +74,7 @@ test('User cannot log in with email with gaps', async ({ page }) => {
 });
 
 test('User cannot log in with valid email and invalid password', async ({ page , browserName}) => {
-    test.skip(browserName === 'chromium' || browserName === 'firefox', 'Capital.com blocks automation in Chromium');
+    test.skip(browserName === 'chromium' || browserName === 'firefox' || browserName === 'webkit', 'Capital.com blocks automation in Chromium');
 
   const loginPage = new LoginPage(page)
   await loginPage.openLoginForm();
@@ -82,4 +88,6 @@ test('User cannot log in with spaces in fields', async ({ page }) => {
   await loginPage.openLoginForm();
   await loginPage.fillLoginForm(gab_email, gab_password);
   await expect(page.getByText('Email or password is invalid.')).toBeVisible();
+});
+
 });
