@@ -36,3 +36,15 @@ test('Pro account page opens succesfully', async ({ page }) => {
   await page.getByRole('link' , { name : 'Pro account'}).click();
   await expect(page).toHaveURL('https://capital.com/en-eu/professional-clients');
 });
+
+test('Verify that the button "Explore markets" provides to sign up form', async ({ page }) => {
+
+  await page.goto('https://capital.com/en-eu');
+  await page.getByRole('button' , { name : 'Trading'}).first().hover();
+  await page.getByRole('link' , { name : 'Trade CFDs'}).waitFor();
+  await page.getByRole('link' , { name : 'Trade CFDs'}).click();
+  await expect(page).toHaveURL('https://capital.com/en-eu/ways-to-trade/cfd-trading');
+  await page.getByRole('button' , { name : 'Explore markets'}).click();
+  await expect(page.getByText('Sign up')).toBeVisible();
+});
+
