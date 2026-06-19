@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { TradingMenu } from '../pages/TradingMenu';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('https://capital.com/en-eu');
@@ -26,34 +27,42 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test('Trading strategies page opens succesfully', async ({ page }) => {
+test('Verify that the page "Trading strategies" opens succesfully and the buttons "Create account" and "Try demo account" lead to Sign up form', async ({ page }) => {
 
-  await page.getByRole('button' , { name : 'Trading'}).first().hover();
-  await page.locator('#header-holder').getByRole('link', { name: 'Trading strategies' }).waitFor();
-  await page.locator('#header-holder').getByRole('link', { name: 'Trading strategies' }).click({ force: true });
+  const menu = new TradingMenu(page);
+  await menu.openMenuItem('Trading strategies'); 
   await expect(page).toHaveURL('https://capital.com/en-eu/learn/trading-strategies');
+  await page.getByRole('button' , { name : 'Create account'}).click();
+  await expect(page.getByText('Sign up')).toBeVisible();
+  await page.locator('[data-type="SIGN_UP_close"]').click();
+  await page.locator('[data-type="SIGN_UP_close"]').waitFor({ state: 'hidden'});
+  await page.getByRole('button' , { name : 'Try demo account'}).click();
+  await expect(page.getByText('Sign up')).toBeVisible();
 });
 
 test('Technical analysis page opens succesfully', async ({ page }) => {
 
-  await page.getByRole('button' , { name : 'Trading'}).first().hover();
-  await page.locator('#header-holder').getByRole('link', { name: 'Technical analysis' }).waitFor();
-  await page.locator('#header-holder').getByRole('link', { name: 'Technical analysis' }).click({ force: true });
+  const menu = new TradingMenu(page);
+  await menu.openMenuItem('Technical analysis');
   await expect(page).toHaveURL('https://capital.com/en-eu/learn/technical-analysis');
 });
 
 test('Trading psychology page opens succesfully', async ({ page }) => {
 
-  await page.getByRole('button' , { name : 'Trading'}).first().hover();
-  await page.locator('#header-holder').getByRole('link', { name: 'Trading psychology' }).waitFor();
-  await page.locator('#header-holder').getByRole('link', { name: 'Trading psychology' }).click({ force: true });
+  const menu = new TradingMenu(page);
+  await menu.openMenuItem('Trading psychology');
   await expect(page).toHaveURL('https://capital.com/en-eu/learn/trading-psychology');
 });
 
-test('All resources page opens succesfully', async ({ page }) => {
+test('Verify that the page "All resources" opens succesfully and the buttons "Open an account" and "Try demo account" lead to Sign up form', async ({ page }) => {
 
-  await page.getByRole('button' , { name : 'Trading'}).first().hover();
-  await page.locator('#header-holder').getByRole('link', { name: 'All resources' }).waitFor();
-  await page.locator('#header-holder').getByRole('link', { name: 'All resources' }).click({ force: true });
+  const menu = new TradingMenu(page);
+  await menu.openMenuItem('All resources');
   await expect(page).toHaveURL('https://capital.com/en-eu/learn');
+  await page.getByRole('button' , { name : 'Open an account'}).click();
+  await expect(page.getByText('Sign up')).toBeVisible();
+  await page.locator('[data-type="SIGN_UP_close"]').click();
+  await page.locator('[data-type="SIGN_UP_close"]').waitFor({ state: 'hidden'});
+  await page.getByRole('button' , { name : 'Try demo account'}).click();
+  await expect(page.getByText('Sign up')).toBeVisible();
 });
