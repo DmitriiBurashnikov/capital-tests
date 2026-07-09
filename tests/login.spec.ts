@@ -14,6 +14,14 @@ const invalid_password = process.env.invalid_password!;
 const gab_email = process.env.gab_email!;
 const gab_password = process.env.gab_password!;
 
+const negativeCases = [
+{ name: 'invalid email', email: invalid_email, password: password, skipBrowsers: [] },
+{ name: 'too long email', email: toolong_user_email, password: password, skipBrowsers: ['chromium', 'firefox'] },
+{ name: 'email with gaps', email: email_with_gaps, password: password, skipBrowsers: [] },
+{ name: 'valid email, invalid password', email: email, password: invalid_password, skipBrowsers: ['chromium', 'firefox'] },
+{ name: 'spaces in the fields', email: gab_email, password: gab_password, skipBrowsers: [] },
+];
+
 describe('Positive cases',() => {
 
 test('User can log in with valid credentials', async ({ page, browserName }) => {
@@ -47,47 +55,14 @@ test('User sees error with empty fields', async ({ page }) => {
   await expect(page.getByText('The email address domain is invalid')).toBeVisible();
 });
 
-test('User cannot log in with too long email',async ({ page, browserName }) => {
-  test.skip(browserName === 'chromium' || browserName === 'firefox' || browserName === 'webkit', 'Capital.com blocks automation in Chromium');
-
-  const loginPage = new LoginPage(page)
-  await loginPage.openLoginForm();
-  await loginPage.fillLoginForm(toolong_user_email, password);
-  await expect(page.getByText('Email or password is invalid.')).toBeVisible({ timeout: 20000 });
+for (const testCase of negativeCases) {
+  test(`User cannot log in: ${testCase.name}`, async ({page , browserName}) => {
+    test.skip(testCase.skipBrowsers.includes(browserName), 'Capital.com blocks automation on this browser');
+    const loginPage = new LoginPage(page)
+    await loginPage.openLoginForm();
+    await loginPage.fillLoginForm(testCase.email, testCase.password);
+    await expect(page.getByText('Email or password is invalid.')).toBeVisible({ timeout: 20000 });
 });
-
-test('User cannot log in with invalid email', async ({ page , browserName }) => {
-    test.skip(browserName === 'chromium' || browserName === 'firefox', 'Capital.com blocks automation in Chromium');
-
-  const loginPage = new LoginPage(page)
-  await loginPage.openLoginForm();
-  await loginPage.fillLoginForm(invalid_email, password);
-  await expect(page.getByText('Email or password is invalid.')).toBeVisible();
-});
-
-test('User cannot log in with email with gaps', async ({ page }) => {
-
-  const loginPage = new LoginPage(page)
-  await loginPage.openLoginForm();
-  await loginPage.fillLoginForm(email_with_gaps, password);
-  await expect(page.getByText('Email or password is invalid.')).toBeVisible();
-});
-
-test('User cannot log in with valid email and invalid password', async ({ page , browserName}) => {
-    test.skip(browserName === 'chromium' || browserName === 'firefox' || browserName === 'webkit', 'Capital.com blocks automation in Chromium');
-
-  const loginPage = new LoginPage(page)
-  await loginPage.openLoginForm();
-  await loginPage.fillLoginForm(email, invalid_password);
-  await expect(page.getByText('Email or password is invalid.')).toBeVisible({ timeout: 20000 });
-});
-
-test('User cannot log in with spaces in fields', async ({ page }) => {
-
-  const loginPage = new LoginPage(page)
-  await loginPage.openLoginForm();
-  await loginPage.fillLoginForm(gab_email, gab_password);
-  await expect(page.getByText('Email or password is invalid.')).toBeVisible();
-});
+}
 
 });
